@@ -21,6 +21,7 @@ local make_entry = require("telescope.make_entry")
 
 local hardhat_ignition = require("hardhat.ignition")
 local hardhat_networks = require("hardhat.networks")
+local hardhat_util = require("hardhat.util")
 
 
 local hardhat_networks_mappings = function(prompt_bufnr, map)
@@ -82,16 +83,8 @@ local hardhat_deploy_mappings = function(top_prompt_bufnr, map)
                 Job:new({
                     command = "pnpm",
                     args = { "hardhat","ignition", "deploy", deploy_module, "--network", network },
-                    cwd = vim.loop.cwd(),
-                    on_exit = function(job,_)
-                        vim.notify(job:result())
-                    end,
-                    on_stdout = function()
-                        vim.notify("deployment succed")
-                    end,
-                    on_stderr = function()
-                        vim.notify("deployment fails",vim.log.levels.ERROR)
-                    end,
+                    cwd = hardhat_util.get_root(),
+                    on_exit = function(job,_) vim.notify(job:result()) end,
                 }):start()
             end)
 
@@ -116,18 +109,69 @@ local hardhat_deploy_picker = function(opts)
     }):find()
 end
 
+local hardhat_deployments_picker_base = function(opts, mappings)
+    opts = opts or {}
+    pickers.new(themes.get_dropdown(), {
+        prompt_title = "hardhat ignition deployments",
+        finder = finders.new_table({
+            results = hardhat_ignition.list_deployments(),
+            entry_maker = function(entry)
+                return {
+                    value = entry,
+                    display = string.format(" %s %s: %s",entry.chain_id, entry.deployment_id, entry.address),
+                    ordinal = entry.chain_id
+                }
+            end,
+        }),
+        sorter = conf.generic_sorter(opts),
+        attach_mappings = mappings,
+    }):find()
+end
+
+local function hardhat_deployments_picker(opts)
+    hardhat_deployments_picker_base(opts, function(prompt_bufnr)
+        actions.select_default:replace(function()
+            local deployment = actions_state.get_selected_entry()
+            vim.notify(string.format("deployment id: %s", deployment.value.deployment_id))
+            actions.close(prompt_bufnr)
+        end)
+        return true
+    end)
+end
+
+local function hardhat_verify_picker(opts)
+    hardhat_deployments_picker_base(opts, function(prompt_bufnr)
+        actions.select_default:replace(function()
+
+            local deployment_id = actions_state.get_selected_entry().value.deployment_id
+	        vim.notify("veifying " .. deployment_id)
+	        actions.close(prompt_bufnr)
+
+            Job:new({
+                command = "pnpm",
+                args = { "hardhat","ignition", "verify", deployment_id},
+                cwd = hardhat_util.get_root(),
+                on_exit = function(job,_) vim.notify(job:result()) end,
+            }):start()
+        end)
+
+        return true
+    end)
+end
+
 
 return telescope.register_extension({
     exports = {
         deploy = hardhat_deploy_picker,
         networks = hardhat_networks_picker,
+        deployments = hardhat_deployments_picker,
+        verify = hardhat_verify_picker,
 
         -- TODO: add pickers for these
-        -- verify = {},
-        -- contracts = {}, -- search contracts with rg
-        -- run = {},       -- search task to run
-        -- export = {},    -- search deployed contracts and verify with hardhat-verify
-        -- sourcify = {},  -- search deployed contracts and verify with sourcify
+        -- contracts = {}, -- find and deploy contracts with ignition modules
+        -- run = {},       -- find and run task
+        -- export = {},    -- find and export deployments with hardhat-verify
+        -- sourcify = {},  -- find and verify deployed contracts with sourcify
     },
 })
 
