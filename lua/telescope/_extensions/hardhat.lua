@@ -15,7 +15,8 @@ local conf = require("telescope.config").values
 local pickers = require("telescope.pickers")
 local themes = require("telescope.themes")
 local finders = require("telescope.finders")
-local actions = require("telescope.actions") local actions_state = require("telescope.actions.state")
+local actions = require("telescope.actions")
+local actions_state = require("telescope.actions.state")
 local actions_utils = require("telescope.actions.utils")
 local make_entry = require("telescope.make_entry")
 
@@ -168,10 +169,8 @@ return telescope.register_extension({
         verify = hardhat_verify_picker,
 
         -- TODO: add pickers for these
-        -- contracts = {}, -- find and deploy contracts with ignition modules
         -- run = {},       -- find and run task
         -- export = {},    -- find and export deployments with hardhat-verify
         -- sourcify = {},  -- find and verify deployed contracts with sourcify
     },
 })
-
