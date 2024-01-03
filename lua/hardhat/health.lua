@@ -20,9 +20,11 @@ M.check = function()
 
     local js_package_manager_exists = util.js_package_manager_exists()
     local plenary_installed =  package.loaded.plenary and true or false
+    local telescope_installed =  package.loaded.telescope and true or false
 
     check_condition(js_package_manager_exists, "pnpm or yarn or npm are installed", "pnpm,or yarn or npm are required")
     check_condition(plenary_installed, "plenary installed", "plenary is requried")
+    check_condition(telescope_installed, "telescope installed", "telescope is requried")
 
 end
 
