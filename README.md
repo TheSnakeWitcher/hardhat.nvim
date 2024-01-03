@@ -45,6 +45,23 @@ snippet corresponds to lazy.
 # Configuration
 
 
+To use the neotest adapter add it to your neotest config.
+
+```lua
+require("neotest").setup({
+    adapters = {
+        require("neotest-hardhat"),
+    },
+})
+
+```
+
+To use the telescope pickers add the extension to your telescope config.
+
+```lua
+require("telescope").load_extension("hardhat")
+```
+
 
 # Documentation
 
