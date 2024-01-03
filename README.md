@@ -9,10 +9,10 @@ neovim. These is a WIP, any contributions are welcome and appreciated.
 
 
 * [x] [Neotest](https://github.com/nvim-neotest/neotest) integration with neotest-hardhat adapter.
-* [ ] [Overseer](https://github.com/stevearc/overseer.nvim) integration.
-* [ ] [Telescope](https://github.com/nvim-telescope/telescope.nvim) integrations which provide
+* [x] [Telescope](https://github.com/nvim-telescope/telescope.nvim) integrations which provide
     * Pickers for `hardhat-ignition` and `hardhat-deploy` deploy systems.
     * Pickers for verification using `hardhat-verify`(verify or sourcify). 
+* [ ] [Overseer](https://github.com/stevearc/overseer.nvim) integration.
 * [ ] Command `HH` for cli integration with hardhat runner(similar to [vim-fugitive](https://github.com/tpope/vim-fugitive)).
 
 
@@ -36,6 +36,7 @@ snippet corresponds to lazy.
     "TheSnakeWitcher/hardhat.nvim",
     dependencies = {
         "nvim-neotest/neotest",
+        "nvim-telescope/telescope.nvim",
     },
 }
 ```
