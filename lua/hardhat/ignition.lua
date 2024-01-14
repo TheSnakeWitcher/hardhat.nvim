@@ -44,7 +44,7 @@ M.get_chain_deployments = function (deployments_dir, chain_dir)
     return results
 end
 
-M.list_deployments = function()
+M.get_deployments = function()
     local deployments = {}
     local deployments_dir = M.get_deployments_path()
     for chain_dir in vim.fs.dir(deployments_dir) do

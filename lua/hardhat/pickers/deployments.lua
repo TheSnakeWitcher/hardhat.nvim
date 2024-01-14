@@ -16,7 +16,7 @@ M.hardhat_deployments_picker_base = function(opts, mappings)
     pickers.new(themes.get_dropdown(), {
         prompt_title = "hardhat ignition deployments",
         finder = finders.new_table({
-            results = hardhat_ignition.list_deployments(),
+            results = hardhat_ignition.get_deployments(),
             entry_maker = function(entry)
                 return {
                     value = entry,
