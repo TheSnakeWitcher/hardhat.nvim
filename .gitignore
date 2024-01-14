@@ -1,0 +1,2 @@
+test/vendor/*/
+**/node_modules/
