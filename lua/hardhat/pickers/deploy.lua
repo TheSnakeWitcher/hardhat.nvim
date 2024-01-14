@@ -55,7 +55,7 @@ M.hardhat_deploy_picker = function(opts)
     pickers.new(opts, {
         prompt_title = "hardhat ignition deploy modules",
         finder = finders.new_table({
-            results = hardhat_ignition.list_modules(),
+            results = hardhat_ignition.get_modules(),
             entry_maker = make_entry.gen_from_file(opts),
         }),
         sorter = conf.file_sorter(opts),

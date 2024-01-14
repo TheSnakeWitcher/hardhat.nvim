@@ -1,4 +1,4 @@
-local scan = pcall(require,'plenary.scandir')
+local scan = require("plenary.scandir")
 local util = require("hardhat.util")
 
 
@@ -11,7 +11,7 @@ M.get_deployments_path = function()
 end
 
 
-M.list_modules = function()
+M.get_modules = function()
     local root = util.get_root()
     local modules_dir = string.format("%s/ignition/modules", root)
     return scan.scan_dir(modules_dir, {})
