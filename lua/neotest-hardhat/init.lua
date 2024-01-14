@@ -32,11 +32,15 @@ function adapter.discover_positions(path)
     local query_file = vim.treesitter.query.get_files("typescript", "hardhat-tests")[1]
     local success, query = pcall(lib.files.read, query_file)
     if not success then
-        logger.error("Could not read hardhat tests queries")
+        logger.error("Could not read hardhat-tests queries")
         return {}
     end
 
-    local tree = lib.treesitter.parse_positions(path, query, { require_namespaces = true, nested_tests = true })
+    local tree = lib.treesitter.parse_positions(
+        path,
+        query,
+        { require_namespaces = true, nested_tests = true }
+    )
     return tree
 end
 
@@ -75,5 +79,6 @@ setmetatable(adapter, {
         return adapter
     end,
 })
+
 
 return adapter
