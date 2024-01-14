@@ -6,7 +6,7 @@ local M = {}
 
 M.get_networks = function ()
     local hardhat_config_filename, lang = util.get_hardhat_config_file()
-    if  not hardhat_config_filename then return {} end
+    if not hardhat_config_filename then return {} end
 
     io.input(hardhat_config_filename)
     local hardhat_config = io.read("*a")
