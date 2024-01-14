@@ -1,10 +1,15 @@
 require("hardhat.cmds")
+require("hardhat.autocmds")
+
 local config = require("hardhat.config")
+local cli = require("hardhat.cli")
 local util = require("hardhat.util")
 
 
 local M = {}
 
+
+M.cli = cli
 
 M.ns = vim.api.nvim_create_namespace("Hardhat")
 
