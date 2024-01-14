@@ -1,3 +1,4 @@
+local config = require("hardhat.config")
 local util = require("hardhat.util")
 local util_parse = require("hardhat.util.parse")
 local overseer = require("overseer")
@@ -25,7 +26,7 @@ end
 M.run = function(opts)
     overseer.run_action(
         overseer.new_task({
-            cmd = util.get_js_package_manager(),
+            cmd = config.package_manager,
             args =  vim.list_extend( { "hardhat" }, opts.fargs ),
             name = string.format("hardhat %s", opts.fargs[1])
         }),
@@ -65,16 +66,14 @@ end
 
 --- @param cmd string[]
 --- @return boolean
-local function in_scope(cmd)
+local function is_scope(cmd)
     return vim.tbl_contains(M.scopes, cmd)
 end
 
 --- @param cmd string[]
 --- @return boolean
-local function in_task(cmd)
-    local is_task = vim.tbl_contains(M.tasks, cmd)
-    vim.notify(string.format("is task: %s", is_task))
-    return  is_task
+local function is_task(cmd)
+    return vim.tbl_contains(M.tasks, cmd)
 end
 
 --- @param arglead string
@@ -97,11 +96,9 @@ M.complete = function(arglead, cmdline, cursor_pos)
     if #cmds == 0 then return get_root_completion() end
 
     local cmd = cmds[2]
-    vim.notify(string.format("cmd is %s", cmd))
-
-    if in_scope(cmd) then
+    if is_scope(cmd) then
         return get_task_scope_completion(cmd)
-    elseif in_task(cmd) then
+    elseif is_task(cmd) then
         return get_task_completion(cmd)
     end
 
