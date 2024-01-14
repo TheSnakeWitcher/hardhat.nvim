@@ -9,8 +9,8 @@ local hardhat_pickers = require("hardhat.pickers")
 
 return telescope.register_extension({
     exports = {
-        deploy = hardhat_pickers.deploy,
         networks = hardhat_pickers.networks,
+        deploy = hardhat_pickers.deploy,
         deployments = hardhat_pickers.deployments,
         verify = hardhat_pickers.verify,
 
