@@ -15,17 +15,28 @@ M.get_hardhat_config_file = function()
     local opts = { upward = true, stop = root, type = "file" }
     local hardhat_config_file = "hardhat.config"
 
-    local results = vim.fs.find(hardhat_config_file .. ".ts", opts)
-    if #results == 1 then
-        return results[1] , "typescript"
+    local ts_results = vim.fs.find(hardhat_config_file .. ".ts", opts)
+    if #ts_results == 1 then
+        return ts_results[1] , "typescript"
     end
 
-    local results = vim.fs.find(hardhat_config_file .. ".js", opts)
-    if #results == 1 then
-        return results[1] , "javascript"
+    local js_results = vim.fs.find(hardhat_config_file .. ".js", opts)
+    if #js_results == 1 then
+        return js_results[1] , "javascript"
     end
 
     return nil, nil
+end
+
+--- @return boolean exists
+--- @return string|nil hardhat_config_file
+M.hardhat_config_file_exists = function()
+    local hardhat_config_file = M.get_hardhat_config_file()
+    if hardhat_config_file then
+        return true, hardhat_config_file
+    else
+        return false, nil
+    end
 end
 
 --- @return string root
