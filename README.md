@@ -8,12 +8,14 @@ neovim. These is a WIP, any contributions are welcome and appreciated.
 ### Features
 
 
-* [x] [Neotest](https://github.com/nvim-neotest/neotest) integration with neotest-hardhat adapter.
-* [x] [Telescope](https://github.com/nvim-telescope/telescope.nvim) integrations which provide
-    * Pickers for `hardhat-ignition` and `hardhat-deploy` deploy systems.
-    * Pickers for verification using `hardhat-verify`(verify or sourcify). 
-* [ ] [Overseer](https://github.com/stevearc/overseer.nvim) integration.
-* [ ] Command `HH` for cli integration with hardhat runner(similar to [vim-fugitive](https://github.com/tpope/vim-fugitive)).
+- [x] Command `HH` with autocompletion(still not per project) for cli integration with hardhat runner(similar to [vim-fugitive](https://github.com/tpope/vim-fugitive)).
+- [x] [Neotest](https://github.com/nvim-neotest/neotest) integration with `neotest-hardhat` adapter.
+- [x] [Telescope](https://github.com/nvim-telescope/telescope.nvim) integrations which provide
+    - Picker for deploy system `hardhat-ignition`(later for `hardhat-deploy` too).
+    - Pickers for verification using `hardhat-verify`(verify or sourcify). 
+    - Pickers for deployments(only `hardhat-ignition` deployments for now). 
+    - Pickers for networks(used as intermediary step for other pickers). 
+- [x] [Overseer](https://github.com/stevearc/overseer.nvim) integration for the `HH` command and later for provided telescope pickers.
 
 
 # Index
@@ -28,7 +30,7 @@ neovim. These is a WIP, any contributions are welcome and appreciated.
 # Installation
 
 
-Install using your prefered package manager. Next code
+Install using your preferred package manager. Next code
 snippet corresponds to lazy.
 
 ```lua
@@ -37,6 +39,7 @@ snippet corresponds to lazy.
     dependencies = {
         "nvim-neotest/neotest",
         "nvim-telescope/telescope.nvim",
+        "stevearc/overseer.nvim",
     },
 }
 ```
