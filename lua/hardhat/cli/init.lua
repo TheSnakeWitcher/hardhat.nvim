@@ -1,6 +1,5 @@
 local config = require("hardhat.config")
-local util = require("hardhat.util")
-local util_parse = require("hardhat.util.parse")
+local cli_parse = require("hardhat.cli.parse")
 local overseer = require("overseer")
 
 
@@ -17,7 +16,7 @@ M.task_options = {}
 M.scope_tasks = {}
 
 M.refresh_completion = function()
-    local completion_options = util_parse.get_root()
+    local completion_options = cli_parse.get_root()
     M.global_options = completion_options.global_options
     M.scopes = completion_options.tasks_scopes
     M.tasks = completion_options.tasks
@@ -40,7 +39,7 @@ local get_task_scope_completion = function(cmd)
     if M.scope_tasks[cmd] then
         return M.scope_tasks[cmd]
     end
-    M.scope_tasks[cmd] = util_parse.get_scope_tasks(cmd)
+    M.scope_tasks[cmd] = cli_parse.get_scope_tasks(cmd)
     return M.scope_tasks[cmd]
 end
 
@@ -50,7 +49,7 @@ local get_task_completion = function(cmd)
     if M.task_options[cmd] then
        return M.task_options[cmd]
     end
-    M.task_options[cmd] = util_parse.get_task_options(cmd)
+    M.task_options[cmd] = cli_parse.get_task_options(cmd)
     return M.task_options[cmd]
 end
 
@@ -90,7 +89,7 @@ M.complete = function(arglead, cmdline, cursor_pos)
     end
 
     local cmds = vim.tbl_filter(
-        function(word) return util_parse.is_task_or_scope(word) end,
+        function(word) return cli_parse.is_task_or_scope(word) end,
         words
     )
     if #cmds == 0 then return get_root_completion() end
