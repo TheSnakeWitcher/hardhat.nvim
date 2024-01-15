@@ -5,7 +5,7 @@ local M = {}
 
 
 --- @param script_name string 
---- @return table paths
+--- @return table results
 M.run = function(script_name)
     local script = string.format("scripts/%s.ts", script_name)
     local script_path = vim.api.nvim_get_runtime_file(script, false)[1]
