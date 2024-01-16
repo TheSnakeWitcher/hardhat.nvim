@@ -11,7 +11,7 @@ neovim. These is a WIP, any contributions are welcome and appreciated.
 - [x] Command `HH` with autocompletion(still not per project) for cli integration with hardhat runner(similar to [vim-fugitive](https://github.com/tpope/vim-fugitive)).
 - [x] [Neotest](https://github.com/nvim-neotest/neotest) integration with `neotest-hardhat` adapter.
 - [x] [Telescope](https://github.com/nvim-telescope/telescope.nvim) integrations which provide
-    - Picker for deploy system `hardhat-ignition`(later for `hardhat-deploy` too).
+    - Picker for deploy using `hardhat-ignition` and `hardhat-deploy` deploy system.
     - Pickers for verification using `hardhat-verify`(verify or sourcify). 
     - Pickers for deployments(only `hardhat-ignition` deployments for now). 
     - Pickers for networks(used as intermediary step for other pickers). 
