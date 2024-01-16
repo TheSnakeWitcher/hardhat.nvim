@@ -1,15 +1,24 @@
 local Job = require("plenary.job")
 
+-- local config = require("hardhat.confg")
+
 
 local M = {}
 
 
 M.items = {
-    contract = "contract",
-    library = "library",
-    interface = "interface",
+    CONTRACT = "contract",
+    LIBRARY = "library",
+    INTERFACE = "interface",
 }
 
+M.deploy_systems = {
+    HARDHAT_IGNITION = "@nomicfoundation/hardhat-ignition-ethers",
+    HARDHAT_DEPLOY = "hardhat-deploy"
+}
+
+--- @return string|nil hardhat_config_file
+--- @return string|nil hardhat_config_filetype
 M.get_hardhat_config_file = function()
     local root = vim.loop.cwd()
     local opts = { upward = true, stop = root, type = "file" }
@@ -61,7 +70,7 @@ M.get_js_package_manager = function()
     end
 end
 
-M.js_package_manager_exists = function()
+M.check_js_package_manager_exists = function()
     local package_manager = M.get_js_package_manager()
     if not package_manager then
         return false
@@ -88,6 +97,52 @@ M.get_item = function(query, path)
         return item_name
     end, results)
     return contracts
+end
+
+--- @return string|nil package_json
+M.get_package_json = function()
+    local root = M.get_root()
+    local package_json_path = string.format("%s/package.json", root)
+
+    local package_json_file = io.open(package_json_path)
+    local package_json = package_json_file:read("*a")
+    package_json_file:close()
+
+    local content = vim.json.decode(package_json)
+    return content
+end
+
+--- @param plugin string 
+--- @return boolean plugin_exists
+M.check_plugin_installed = function(plugin)
+    local package_json = M.get_package_json()
+
+    local plugin_version
+    if package_json.devDependencies then
+        plugin_version = package_json.devDependencies[plugin]
+    elseif package_json.dependencies then
+        plugin_version = package_json.dependencies[plugin]
+    end
+
+    if not plugin_version then
+        return false
+    else
+        return true
+    end
+end
+
+--- @return table|nil callback_results
+M.check_deploy_system_and_do = function(hh_ignition_callback, hh_deploy_callback)
+    local hardhat_ignition = M.deploy_systems.HARDHAT_IGNITION
+    local hardhat_deploy = M.deploy_systems.HARDHAT_DEPLOY
+
+    if M.check_plugin_installed(hardhat_ignition) then
+        return hh_ignition_callback()
+    elseif M.check_plugin_installed(hardhat_deploy) then
+        return hh_deploy_callback()
+    else
+        return nil
+    end
 end
 
 
