@@ -36,7 +36,7 @@ M.check = function()
     vim.health.report_start("hardhat.nvim report")
 
     check_condition(
-        util.js_package_manager_exists(),
+        util.check_js_package_manager_exists(),
         "js package manager installed",
         "js package manager required"
     )
