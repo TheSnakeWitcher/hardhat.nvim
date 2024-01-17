@@ -1,3 +1,4 @@
+local Path = require("plenary.path")
 local util = require("hardhat.util")
 
 
@@ -7,14 +8,7 @@ local M = {}
 M.get_networks = function ()
     local hardhat_config_filename, lang = util.get_hardhat_config_file()
     if not hardhat_config_filename then return {} end
-
-    io.input(hardhat_config_filename)
-    local hardhat_config = io.read("*a")
-    if not hardhat_config then
-        vim.notify(string.format("error parsing %s", hardhat_config_filename))
-        return {}
-    end
-    io.close()
+    local hardhat_config = Path:new(hardhat_config_filename):read()
 
     local query_name = "hardhat-networks"
     local languaje_tree = vim.treesitter.get_string_parser(hardhat_config, lang):parse()
@@ -30,7 +24,6 @@ M.get_networks = function ()
         end
     end
     return networks
-
 end
 
 
