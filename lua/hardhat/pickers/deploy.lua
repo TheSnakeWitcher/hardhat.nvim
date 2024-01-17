@@ -7,6 +7,7 @@ local make_entry = require("telescope.make_entry")
 
 local Job = require("plenary.job")
 
+local config = require("hardhat.config")
 local hardhat_util = require("hardhat.util")
 local hardhat_ignition = require("hardhat.ignition")
 local hardhat_deploy = require("hardhat.deploy")
@@ -26,7 +27,6 @@ local function hardhat_ignition_mappings(top_prompt_bufnr, _)
     actions.select_default:replace(function()
 
         local deploy_module = get_entry_and_close_buf(top_prompt_bufnr)
-	    vim.notify("deploying " .. deploy_module)
 
         hardhat_networks_picker_base({}, function(prompt_bufnr)
 
@@ -39,10 +39,10 @@ local function hardhat_ignition_mappings(top_prompt_bufnr, _)
                 -- end)
 
                 local network = get_entry_and_close_buf(prompt_bufnr)
-                vim.notify("using network " .. network)
 
+                vim.notify(string.format("deploying %s using network %s", deploy_module, network))
                 Job:new({
-                    command = conf.package_manager,
+                    command = config.package_manager,
                     args = { "hardhat","ignition", "deploy", deploy_module, "--network", network },
                     cwd = hardhat_util.get_root(),
                     on_exit = function(job,_) vim.notify(job:result()) end,
@@ -60,16 +60,14 @@ local function hardhat_deploy_mappings(top_prompt_bufnr, _)
     actions.select_default:replace(function()
 
         local contract = get_entry_and_close_buf(top_prompt_bufnr)
-	    vim.notify("deploying " .. contract)
-
         hardhat_networks_picker_base({}, function(prompt_bufnr)
 
             actions.select_default:replace(function()
                 local network = get_entry_and_close_buf(prompt_bufnr)
-                vim.notify("using network " .. network)
 
+                vim.notify(string.format("deploying %s using network %s", contract, network))
                 Job:new({
-                    command = conf.package_manager,
+                    command = config.package_manager,
                     args = { "hardhat", "deploy", contract, "--network", network },
                     cwd = hardhat_util.get_root(),
                     on_exit = function(job,_) vim.notify(job:result()) end,
