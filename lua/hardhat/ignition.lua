@@ -1,5 +1,6 @@
 local scan = require("plenary.scandir")
 local util = require("hardhat.util")
+local Path = require("plenary.path")
 
 
 local M = {}
@@ -21,14 +22,8 @@ M.get_chain_deployments = function (deployments_dir, chain_dir)
     local results = {}
     local chain_id = vim.split(chain_dir, "-")[2]
 
-    local file = io.open(string.format("%s/%s/deployed_addresses.json", deployments_dir, chain_dir))
-    if not file then return {} end
-
-    local deployments_json = file:read("*a")
+    local deployments_json = Path:new(deployments_dir):joinpath(chain_dir, "deployed_addresses.json"):read()
     if not deployments_json then return {} end
-
-    local file_closed = file:close()
-    if not file_closed then vim.notify("error closing file") end
 
     local deployments = vim.json.decode(deployments_json)
     if not deployments then return {} end
