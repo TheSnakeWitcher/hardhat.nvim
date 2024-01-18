@@ -21,10 +21,10 @@ neovim. These is a WIP, any contributions are welcome and appreciated.
 # Index
 
 
-1. [Installation](#Installation)
-2. [Configuration](#Configuration)
-3. [Documentation](#Documentation)
-4. [License](#License)
+- [Installation](#Installation)
+- [Configuration](#Configuration)
+- [Documentation](#Documentation)
+- [License](#License)
 
 
 # Installation
