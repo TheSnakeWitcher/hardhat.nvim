@@ -3,14 +3,11 @@ require("hardhat.autocmds")
 
 local config = require("hardhat.config")
 local util = require("hardhat.util")
-local cli = require("hardhat.cli")
 local scripts = require("hardhat.scripts")
 
 
 local M = {}
 
-
-M.cli = cli
 
 M.setup = function(options)
     config.setup(options)
