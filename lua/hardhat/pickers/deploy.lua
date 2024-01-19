@@ -68,7 +68,7 @@ local function hardhat_deploy_mappings(top_prompt_bufnr, _)
                 vim.notify(string.format("deploying %s using network %s", contract, network))
                 Job:new({
                     command = config.package_manager,
-                    args = { "hardhat", "deploy", contract, "--network", network },
+                    args = { "hardhat", "deploy", "--tags", contract, "--network", network },
                     cwd = hardhat_util.get_root(),
                     on_exit = function(job,_) vim.notify(job:result()) end,
                 }):start()
