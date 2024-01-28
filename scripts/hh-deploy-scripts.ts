@@ -12,8 +12,8 @@ async function main() {
         const mod = await import(`${deploy_path}/${deploy_script}`)
         return mod.default.tags
     }))
-    
-    return JSON.stringify(tags.flat())
+
+    return JSON.stringify([... new Set(tags.flat() )])
 }
 
 
