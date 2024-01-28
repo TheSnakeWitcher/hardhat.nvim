@@ -14,19 +14,6 @@ local hardhat_networks_picker_base = require("hardhat.pickers.networks").hardhat
 local M = {}
 
 
-local function get_network_from_picker()
-    local network
-    hardhat_networks_picker_base({}, function(prompt_bufnr)
-        actions.select_default:replace(function()
-	        network = actions_state.get_selected_entry().value
-	        actions.close(prompt_bufnr)
-        end)
-        return true
-    end)
-    return network
-end
-
-
 local function hardhat_verify_ignition_picker(opts)
     hardhat_networks_picker_base({}, function(top_prompt_bufnr)
         actions.select_default:replace(function()
@@ -71,7 +58,7 @@ local function hardhat_verify_deploy_picker(opts)
 	                vim.notify(string.format("verifying %s using netowrk %s", deployment.deployment_id, network))
                     Job:new({
                         command = config.package_manager,
-                        args = vim.list_extend({ "hardhat", "--network", network, "verify", deployment.deployment_id }, deployment.args ),
+                        args = vim.list_extend({ "hardhat", "--network", network, "verify", deployment.address }, deployment.args ),
                         cwd = util.get_root(),
                         on_exit = function(job,_) vim.notify(job:result()) end,
                     }):start()
@@ -86,8 +73,7 @@ local function hardhat_verify_deploy_picker(opts)
 end
 
 M.hardhat_verify_picker = function (opts)
-
-
+    opts = opts or {}
     util.check_deploy_system_and_do(
         hardhat_verify_ignition_picker,
         hardhat_verify_deploy_picker
