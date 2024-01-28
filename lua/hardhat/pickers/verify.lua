@@ -50,7 +50,7 @@ local function hardhat_verify_deploy_picker(opts)
             local network = actions_state.get_selected_entry().value
 	        actions.close(top_prompt_bufnr)
 
-            hardhat_deployments_picker_base(opts, hardhat_deploy.get_deployments, function(prompt_bufnr)
+            hardhat_deployments_picker_base(opts, { hardhat_deploy.get_chain_deployments, network }, function(prompt_bufnr)
                 actions.select_default:replace(function()
                     local deployment = actions_state.get_selected_entry().value
 	                actions.close(prompt_bufnr)
