@@ -24,7 +24,7 @@ M.hardhat_deployments_picker_base = function(opts, deployment_finder, mappings)
                 return {
                     value = entry,
                     display = string.format(" %s %s: %s", entry.chain_id, entry.deployment_id, entry.address),
-                    ordinal = entry.chain_id
+                    ordinal = entry.deployment_id
                 }
             end,
         }),
