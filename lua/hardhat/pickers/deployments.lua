@@ -16,10 +16,19 @@ local M = {}
 M.hardhat_deployments_picker_base = function(opts, deployment_finder, mappings)
     opts = vim.tbl_deep_extend("force", opts or {}, themes.get_dropdown())
 
+    local deployment_finder_fn, deployment_finder_args
+    if type(deployment_finder) == "table" then
+        deployment_finder_fn = deployment_finder[1]
+        deployment_finder_args = deployment_finder[2]
+    elseif type(deployment_finder) == "function" then
+        deployment_finder_fn = deployment_finder
+        deployment_finder_args = nil
+    end
+
     pickers.new( opts , {
         prompt_title = "hardhat deployments",
         finder = finders.new_table({
-            results = deployment_finder(),
+            results = deployment_finder_fn(deployment_finder_args),
             entry_maker = function(entry)
                 return {
                     value = entry,
