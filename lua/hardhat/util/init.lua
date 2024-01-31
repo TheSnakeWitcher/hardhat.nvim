@@ -1,7 +1,5 @@
 local Job = require("plenary.job")
 
--- local config = require("hardhat.confg")
-
 
 local M = {}
 
@@ -39,7 +37,7 @@ end
 
 --- @return boolean exists
 --- @return string|nil hardhat_config_file
-M.hardhat_config_file_exists = function()
+M.check_hardhat_config_file_exists = function()
     local hardhat_config_file = M.get_hardhat_config_file()
     if hardhat_config_file then
         return true, hardhat_config_file
