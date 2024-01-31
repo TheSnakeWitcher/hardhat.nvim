@@ -4,10 +4,14 @@ local util = require("hardhat.util")
 local M = {}
 
 
-M.namespace = vim.api.nvim_create_namespace("hardhat.nvim")
+M.ns = vim.api.nvim_create_namespace("hardhat.nvim")
 
 local defaults = {
     package_manager = util.get_js_package_manager(),
+    gas_extmarks = {
+        sign = "󰊘",
+        highlight = "Normal",
+    }
 }
 
 M.options = {}
