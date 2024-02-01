@@ -10,6 +10,7 @@ local LANG = "solidity"
 local SOL_EXTENSION = ".sol"
 local JSON_EXTENSION = ".json"
 local DEBUG_EXTENSION = ".dbg" .. JSON_EXTENSION
+local JSON_DECODE_OPTS = { luanil = { object = true, array = true } }
 
 --- @return string artifacts_path
 M.get_artifacts_path = function()
@@ -53,9 +54,12 @@ end
 --- @param contract_info ContractInfo
 M.get_contract_buildinfo_filename = function(contract_info)
     local artifacts_path = M.get_artifacts_path()
-    local debug_file_path = Path:new(artifacts_path):joinpath(contract_info.path, contract_info.contract .. DEBUG_EXTENSION)
+    local debug_file_path = Path:new(artifacts_path):joinpath(
+        contract_info.path,
+        contract_info.contract .. DEBUG_EXTENSION
+    )
 
-    local debug_file = vim.json.decode(debug_file_path:read())
+    local debug_file = vim.json.decode(debug_file_path:read(), JSON_DECODE_OPTS)
     return vim.fs.basename(debug_file.buildInfo)
 end
 
@@ -68,7 +72,7 @@ M.get_contract_buildinfo = function(contract_info)
     local buildinfo = Path:new(buildinfo_path):joinpath(buildinfo_filename)
     if not buildinfo:exists() then return nil end
 
-    return vim.json.decode(buildinfo:read())
+    return vim.json.decode(buildinfo:read(), JSON_DECODE_OPTS)
 end
 
 --- @param contract_info ContractInfo
@@ -84,7 +88,7 @@ M.get_sources_output_artifacts = function(contract_info)
     return buildinfo.output.sources[contract_info.path][contract_info.source]
 end
 
---- @param contrac_info ContractInfo
+--- @param contract_info ContractInfo
 --- @return table|nil function_selectors
 M.get_function_selectors = function(contract_info)
     local artifacts = M.get_contract_output_artifacts(contract_info)
@@ -95,7 +99,7 @@ end
 --- @return table|nil gas_estimates
 M.get_gas_estimates = function(contract_info)
     local artifacts = M.get_contract_output_artifacts(contract_info)
-    return artifacts.evm and artifacts.evm.gasEstimates or nil
+    return artifacts.evm.gasEstimates
 end
 
 --- @return table|nil function_selectors
@@ -111,9 +115,8 @@ M.get_contract_gas_estimates = function(bufnr)
     return M.get_gas_estimates(contract_info)
 end
 
---- @return string filename
---- @return string contract
---- @return string source_path
+
+--- @return ContractInfo contract_info
 M.get_current_contract_info = function()
     local bufnr = vim.api.nvim_get_current_buf()
     return M.get_contract_info(bufnr)
