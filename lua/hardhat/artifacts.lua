@@ -30,10 +30,8 @@ M.get_buildinfo_path = function()
 end
 
 --- @param bufnr number
---- @return string filename
---- @return string contract
---- @return string source_path
-M.get_contract_source = function(bufnr)
+--- @return ContractInfo contract_info 
+M.get_contract_info = function(bufnr)
     local root = util.get_root()
     local source = Path:new(vim.api.nvim_buf_get_name(bufnr))
     local source_path = source:make_relative(root)
@@ -43,25 +41,29 @@ M.get_contract_source = function(bufnr)
     local tree = vim.treesitter.get_parser(bufnr):parse()[1]:root()
     for _, node, _ in query:iter_captures(tree, bufnr) do
         local contract = vim.treesitter.get_node_text(node, bufnr)
-        return filename, contract, source_path
+        return {
+            path = source_path,
+            filename = filename,
+            source = vim.split(filename, SOL_EXTENSION)[1],
+            contract = contract,
+        }
     end
 end
 
---- @return string buildinfo_filename
-M.get_contract_buildinfo_filename = function(source_path, contract)
+--- @param contract_info ContractInfo
+M.get_contract_buildinfo_filename = function(contract_info)
     local contracts_artifacts_path = M.get_artifacts_path()
-    local debug_file_path = Path:new(contracts_artifacts_path):joinpath(source_path, contract .. DEBUG_EXTENSION)
+    local debug_file_path = Path:new(contracts_artifacts_path):joinpath(contract_info.path, contract_info.contract .. DEBUG_EXTENSION)
 
     local debug_file = vim.json.decode(debug_file_path:read())
     return vim.fs.basename(debug_file.buildInfo)
 end
 
---- @param source_path string
---- @param contract string
+--- @param contract_info ContractInfo
 --- @return table|nil buildinfo_filename
-M.get_contract_buildinfo = function(source_path, contract)
+M.get_contract_buildinfo = function(contract_info)
     local buildinfo_path = M.get_buildinfo_path()
-    local buildinfo_filename = M.get_contract_buildinfo_filename(source_path, contract)
+    local buildinfo_filename = M.get_contract_buildinfo_filename(contract_info)
 
     local buildinfo = Path:new(buildinfo_path):joinpath(buildinfo_filename)
     if not buildinfo:exists() then return nil end
@@ -69,76 +71,76 @@ M.get_contract_buildinfo = function(source_path, contract)
     return vim.json.decode(buildinfo:read())
 end
 
+--- @param contract_info ContractInfo
 --- @return table|nil contract_output_artifacts
-M.get_contract_output_artifacts = function(filename, contract, source_path)
-    local buildinfo = M.get_contract_buildinfo(source_path, contract)
-    local source = vim.split(filename, SOL_EXTENSION)[1]
-    return buildinfo.output.contracts[source_path][source]
+M.get_contract_output_artifacts = function(contract_info)
+    local buildinfo = M.get_contract_buildinfo(contract_info)
+    return buildinfo.output.contracts[contract_info.path][contract_info.source]
 end
 
 --- @return table|nil sources_output_artifacts
-M.get_sources_output_artifacts = function(filename, contract, source_path)
-    local buildinfo = M.get_contract_buildinfo(source_path, contract)
-    local source = vim.split(filename, SOL_EXTENSION)[1]
-    return buildinfo.output.sources[source_path][source]
+M.get_sources_output_artifacts = function(contract_info)
+    local buildinfo = M.get_contract_buildinfo(contract_info)
+    return buildinfo.output.sources[contract_info.path][contract_info.source]
 end
 
+--- @param contrac_info ContractInfo
 --- @return table|nil function_selectors
-M.get_function_selectors = function(filename, contract, source_path)
-    local artifacts = M.get_contract_output_artifacts(filename, contract, source_path)
+M.get_function_selectors = function(contract_info)
+    local artifacts = M.get_contract_output_artifacts(contract_info)
     return artifacts.evm.methodIdentifiers
 end
 
+--- @param contract_info ContractInfo
 --- @return table|nil gas_estimates
-M.get_gas_estimates = function(filename, contract, source_path)
-    local artifacts = M.get_contract_output_artifacts(filename, contract, source_path)
+M.get_gas_estimates = function(contract_info)
+    local artifacts = M.get_contract_output_artifacts(contract_info)
     return artifacts.evm and artifacts.evm.gasEstimates or nil
+end
+
+--- @return table|nil function_selectors
+M.get_contract_function_selectors = function(bufnr)
+    local contract_info = M.get_contract_info(bufnr)
+    return M.get_function_selectors(contract_info)
 end
 
 --- @param bufnr number
 --- @return table|nil gas_estimates
 M.get_contract_gas_estimates = function(bufnr)
-    local filename, contract, source_path = M.get_contract_source(bufnr)
-    return M.get_gas_estimates(filename, contract, source_path )
+    local contract_info = M.get_contract_info(bufnr)
+    return M.get_gas_estimates(contract_info)
 end
 
 --- @return string filename
 --- @return string contract
 --- @return string source_path
-M.get_current_contract_source = function()
+M.get_current_contract_info = function()
     local bufnr = vim.api.nvim_get_current_buf()
-    return M.get_contract_source(bufnr)
+    return M.get_contract_info(bufnr)
 end
 
 --- @return table|nil contract_output_artifacts
 M.get_current_contract_output_artifacts = function()
-    local filename, contract, source_path = M.get_current_contract_source()
-    return M.get_contract_output_artifacts(filename, contract, source_path)
+    local contract_info = M.get_current_contract_info()
+    return M.get_contract_output_artifacts(contract_info)
 end
 
 --- @return table|nil sources_output_artifacts
 M.get_current_sources_output_artifacts = function()
-    local filename, contract, source_path = M.get_current_contract_source()
-    return M.get_sources_output_artifacts(filename, contract, source_path)
+    local contract_info = M.get_current_contract_info()
+    return M.get_sources_output_artifacts(contract_info)
 end
 
 --- @return table|nil gas_estimates
 M.get_current_contract_gas_estimates = function()
-    local filename, contract, source_path = M.get_current_contract_source()
-    return M.get_gas_estimates(filename, contract, source_path)
+    local contract_info = M.get_current_contract_info()
+    return M.get_gas_estimates(contract_info)
 end
 
 --- @return table|nil function_selectors
 M.get_current_contract_function_selectors = function()
-    local filename, contract, source_path = M.get_current_contract_source()
-    return M.get_function_selectors(filename, contract, source_path)
-end
-
-
---- @return table|nil function_selectors
-M.get_functions_signature = function()
-    local filename, contract, source_path = M.get_current_contract_source()
-    return M.get_function_selectors(filename, contract, source_path)
+    local contract_info = M.get_current_contract_info()
+    return M.get_function_selectors(contract_info)
 end
 
 local function get_function_attributes(bufnr, function_node)
