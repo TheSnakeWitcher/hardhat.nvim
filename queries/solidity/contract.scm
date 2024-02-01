@@ -2,3 +2,11 @@
 ((contract_declaration
    (identifier) @contractName
 ))
+
+((library_declaration
+   (identifier) @contractName
+))
+
+((interface_declaration
+   (identifier) @contractName
+))

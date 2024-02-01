@@ -52,8 +52,8 @@ end
 
 --- @param contract_info ContractInfo
 M.get_contract_buildinfo_filename = function(contract_info)
-    local contracts_artifacts_path = M.get_artifacts_path()
-    local debug_file_path = Path:new(contracts_artifacts_path):joinpath(contract_info.path, contract_info.contract .. DEBUG_EXTENSION)
+    local artifacts_path = M.get_artifacts_path()
+    local debug_file_path = Path:new(artifacts_path):joinpath(contract_info.path, contract_info.contract .. DEBUG_EXTENSION)
 
     local debug_file = vim.json.decode(debug_file_path:read())
     return vim.fs.basename(debug_file.buildInfo)
