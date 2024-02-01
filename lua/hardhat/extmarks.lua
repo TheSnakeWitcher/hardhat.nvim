@@ -30,7 +30,7 @@ local function set_gas_extmark(bufnr, fn, fn_attributes, fn_gas_estimate)
                 virt_text_pos = "eol"
             }
         )
-    else
+    elseif fn_gas_estimate then
         local new_extmark_id = vim.api.nvim_buf_set_extmark(
             bufnr,
             config.ns,
@@ -74,9 +74,11 @@ function M.set_gas_extmarks(bufnr)
         return nil
     end
 
-
     for fn, attributes in pairs(fn_attributes) do
-        set_gas_extmark(bufnr, fn, attributes, contract_gas_estimates[fn])
+        local fn_gas_estimate = contract_gas_estimates[fn]
+        if fn_gas_estimate then
+            set_gas_extmark(bufnr, fn, attributes, fn_gas_estimate)
+        end
     end
 end
 
