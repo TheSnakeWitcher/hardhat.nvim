@@ -18,12 +18,6 @@ M.get_artifacts_path = function()
     return string.format("%s/artifacts", root)
 end
 
---- @return string contract_artifacts_path
-M.get_contracts_artifacts_path = function()
-    local artifacts_path = M.get_artifacts_path()
-    return string.format("%s/contracts", artifacts_path)
-end
-
 --- @return string buildinfo_path
 M.get_buildinfo_path = function()
     local artifacts_path = M.get_artifacts_path()
@@ -77,13 +71,13 @@ end
 
 --- @param contract_info ContractInfo
 --- @return table|nil contract_output_artifacts
-M.get_contract_output_artifacts = function(contract_info)
+M.get_output_contract_artifacts = function(contract_info)
     local buildinfo = M.get_contract_buildinfo(contract_info)
     return buildinfo.output.contracts[contract_info.path][contract_info.source]
 end
 
 --- @return table|nil sources_output_artifacts
-M.get_sources_output_artifacts = function(contract_info)
+M.get_output_sources_artifacts = function(contract_info)
     local buildinfo = M.get_contract_buildinfo(contract_info)
     return buildinfo.output.sources[contract_info.path][contract_info.source]
 end
@@ -91,15 +85,22 @@ end
 --- @param contract_info ContractInfo
 --- @return table|nil function_selectors
 M.get_function_selectors = function(contract_info)
-    local artifacts = M.get_contract_output_artifacts(contract_info)
+    local artifacts = M.get_output_contract_artifacts(contract_info)
     return artifacts.evm.methodIdentifiers
 end
 
 --- @param contract_info ContractInfo
 --- @return table|nil gas_estimates
 M.get_gas_estimates = function(contract_info)
-    local artifacts = M.get_contract_output_artifacts(contract_info)
+    local artifacts = M.get_output_contract_artifacts(contract_info)
     return artifacts.evm.gasEstimates
+end
+
+--- @param contract_info ContractInfo
+--- @return table|nil metadata
+M.get_metadata = function(contract_info)
+    local artifacts = M.get_output_contract_artifacts(contract_info)
+    return artifacts.metadata
 end
 
 --- @return table|nil function_selectors
@@ -115,6 +116,12 @@ M.get_contract_gas_estimates = function(bufnr)
     return M.get_gas_estimates(contract_info)
 end
 
+--- @param bufnr number
+--- @return table|nil metadata
+M.get_contract_metadata = function(bufnr)
+    local contract_info = M.get_contract_info(bufnr)
+    return M.get_metadata(contract_info)
+end
 
 --- @return ContractInfo contract_info
 M.get_current_contract_info = function()
@@ -125,13 +132,13 @@ end
 --- @return table|nil contract_output_artifacts
 M.get_current_contract_output_artifacts = function()
     local contract_info = M.get_current_contract_info()
-    return M.get_contract_output_artifacts(contract_info)
+    return M.get_output_contract_artifacts(contract_info)
 end
 
 --- @return table|nil sources_output_artifacts
 M.get_current_sources_output_artifacts = function()
     local contract_info = M.get_current_contract_info()
-    return M.get_sources_output_artifacts(contract_info)
+    return M.get_output_sources_artifacts(contract_info)
 end
 
 --- @return table|nil gas_estimates
