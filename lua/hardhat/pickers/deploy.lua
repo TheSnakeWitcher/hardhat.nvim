@@ -22,23 +22,20 @@ local function hardhat_ignition_mappings(top_prompt_bufnr, _)
 
         local deploy_modules = pickers_util.get_entries_and_close_buf(top_prompt_bufnr)
         hardhat_networks_picker_base({}, function(prompt_bufnr)
-
             actions.select_default:replace(function()
-                local networks = pickers_util.get_entries_and_close_buf(prompt_bufnr)
-                local network_contract_pairs = pickers_util.get_pairs(networks, deploy_modules)
 
-                for _, pair in ipairs(network_contract_pairs) do
-                    local network, deploy_module = unpack(pair)
-                    vim.notify(string.format("deploying %s using network %s", deploy_module, network))
+                local networks = pickers_util.get_entries_and_close_buf(prompt_bufnr)
+                pickers_util.do_with_pairs(networks, deploy_modules, function(network, deploy_module)
+                    vim.notify(string.format("deploying %s using network %s", vim.fs.basename(deploy_module), network))
                     Job:new({
                         command = config.package_manager,
                         args = { "hardhat","ignition", "deploy", deploy_module, "--network", network },
                         cwd = util.get_root(),
                         on_exit = function(job,_) vim.notify(job:result()) end,
                     }):start()
-                end
-            end)
+                end)
 
+            end)
             return true
         end)
 
@@ -51,13 +48,10 @@ local function hardhat_deploy_mappings(top_prompt_bufnr, _)
 
         local contracts = pickers_util.get_entries_and_close_buf(top_prompt_bufnr)
         hardhat_networks_picker_base({}, function(prompt_bufnr)
-
             actions.select_default:replace(function()
-                local networks = pickers_util.get_entries_and_close_buf(prompt_bufnr)
-                local network_contract_pairs = pickers_util.get_pairs(networks, contracts)
 
-                for _, pair in ipairs(network_contract_pairs) do
-                    local network, contract = unpack(pair)
+                local networks = pickers_util.get_entries_and_close_buf(prompt_bufnr)
+                pickers_util.do_with_pairs(networks, contracts, function(network, contract)
                     vim.notify(string.format("deploying %s using network %s", contract, network))
                     Job:new({
                         command = config.package_manager,
@@ -65,9 +59,9 @@ local function hardhat_deploy_mappings(top_prompt_bufnr, _)
                         cwd = util.get_root(),
                         on_exit = function(job,_) vim.notify(job:result()) end,
                     }):start()
-                end
-            end)
+                end)
 
+            end)
             return true
         end)
 
