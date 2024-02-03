@@ -3,11 +3,10 @@ local pickers = require("telescope.pickers")
 local themes = require("telescope.themes")
 local finders = require("telescope.finders")
 local actions = require("telescope.actions")
-local actions_state = require("telescope.actions.state")
-local actions_utils = require("telescope.actions.utils")
 local make_entry = require("telescope.make_entry")
 
 local hardhat_networks = require("hardhat.networks")
+local pickers_util = require("hardhat.util.pickers")
 
 
 local M = {}
@@ -15,20 +14,8 @@ local M = {}
 
 local function hardhat_networks_mappings(prompt_bufnr, map)
     actions.select_default:replace(function()
-        local networks = {}
-        actions_utils.map_selections(prompt_bufnr, function(entry, _)
-            table.insert(networks, entry.value)
-        end)
-	    actions.close(prompt_bufnr)
-
-        if #networks < 1 then
-	        local network = actions_state.get_selected_entry().value
-	        return network
-        else
-	        return networks
-        end
+        return pickers_util.get_entries_and_close_buf(prompt_bufnr)
 	end)
-
     return true
 end
 
