@@ -37,15 +37,44 @@ local function get_chain_deployments(chain_deployments_dir)
     return results
 end
 
-M.get_chain_deployments = function(network)
-    local deployments_dir = M.get_deployments_path()
+local function check_chain_deployment_path(deployments_dir, network)
     local chain_deployments_dir = Path:new(deployments_dir):joinpath(network)
-
     if not chain_deployments_dir:exists() then
-        return {}
+        return false, nil
     end
+    return true, chain_deployments_dir:expand()
+end
 
-    return get_chain_deployments(chain_deployments_dir:expand())
+local function check_common_deployments(chain_deployments, deployments)
+    if #deployments < 1 then return chain_deployments end
+
+    for index, deployment in ipairs(deployments) do
+        local found = false
+        for _, chain_deployment in ipairs(chain_deployments) do
+            if chain_deployment.deployment_id == deployment.deployment_id then
+                found = true
+                break
+            end
+        end
+        if not found then table.remove(deployments, index) end
+    end
+    return deployments
+end
+
+M.get_chain_deployments = function(networks)
+    local deployments_dir = M.get_deployments_path()
+    local deployments = {}
+
+    vim.tbl_map(function(network)
+        local exists, chain_deployment_dir = check_chain_deployment_path(deployments_dir, network)
+        if exists then
+            local chain_deployments = get_chain_deployments(chain_deployment_dir)
+            deployments = check_common_deployments(chain_deployments, deployments)
+            if #deployments < 1 then return {} end
+        end
+    end, networks)
+
+    return deployments
 end
 
 M.get_deployments = function()
