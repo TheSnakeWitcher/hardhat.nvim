@@ -2,13 +2,13 @@ local conf = require("telescope.config").values
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
 local actions = require("telescope.actions")
-local actions_state = require("telescope.actions.state")
 local make_entry = require("telescope.make_entry")
 
 local Job = require("plenary.job")
 
 local config = require("hardhat.config")
-local hardhat_util = require("hardhat.util")
+local util = require("hardhat.util")
+local pickers_util = require("hardhat.util.pickers")
 local hardhat_ignition = require("hardhat.ignition")
 local hardhat_deploy = require("hardhat.deploy")
 local hardhat_networks_picker_base = require("hardhat.pickers.networks").hardhat_networks_picker_base
@@ -17,36 +17,26 @@ local hardhat_networks_picker_base = require("hardhat.pickers.networks").hardhat
 local M = {}
 
 
-local function get_entry_and_close_buf(prompt_bufnr)
-	local entry = actions_state.get_selected_entry().value
-	actions.close(prompt_bufnr)
-	return entry
-end
-
 local function hardhat_ignition_mappings(top_prompt_bufnr, _)
     actions.select_default:replace(function()
 
-        local deploy_module = get_entry_and_close_buf(top_prompt_bufnr)
-
+        local deploy_modules = pickers_util.get_entries_and_close_buf(top_prompt_bufnr)
         hardhat_networks_picker_base({}, function(prompt_bufnr)
 
             actions.select_default:replace(function()
+                local networks = pickers_util.get_entries_and_close_buf(prompt_bufnr)
+                local network_contract_pairs = pickers_util.get_pairs(networks, deploy_modules)
 
-                -- TODO: add support for multiple networks
-                -- local networks = {}
-                -- actions_utils.map_selections(prompt_bufnr, function(entry, _)
-                --     table.insert(networks, entry.value)
-                -- end)
-
-                local network = get_entry_and_close_buf(prompt_bufnr)
-
-                vim.notify(string.format("deploying %s using network %s", deploy_module, network))
-                Job:new({
-                    command = config.package_manager,
-                    args = { "hardhat","ignition", "deploy", deploy_module, "--network", network },
-                    cwd = hardhat_util.get_root(),
-                    on_exit = function(job,_) vim.notify(job:result()) end,
-                }):start()
+                for _, pair in ipairs(network_contract_pairs) do
+                    local network, deploy_module = unpack(pair)
+                    vim.notify(string.format("deploying %s using network %s", deploy_module, network))
+                    Job:new({
+                        command = config.package_manager,
+                        args = { "hardhat","ignition", "deploy", deploy_module, "--network", network },
+                        cwd = util.get_root(),
+                        on_exit = function(job,_) vim.notify(job:result()) end,
+                    }):start()
+                end
             end)
 
             return true
@@ -59,19 +49,23 @@ end
 local function hardhat_deploy_mappings(top_prompt_bufnr, _)
     actions.select_default:replace(function()
 
-        local contract = get_entry_and_close_buf(top_prompt_bufnr)
+        local contracts = pickers_util.get_entries_and_close_buf(top_prompt_bufnr)
         hardhat_networks_picker_base({}, function(prompt_bufnr)
 
             actions.select_default:replace(function()
-                local network = get_entry_and_close_buf(prompt_bufnr)
+                local networks = pickers_util.get_entries_and_close_buf(prompt_bufnr)
+                local network_contract_pairs = pickers_util.get_pairs(networks, contracts)
 
-                vim.notify(string.format("deploying %s using network %s", contract, network))
-                Job:new({
-                    command = config.package_manager,
-                    args = { "hardhat", "deploy", "--tags", contract, "--network", network },
-                    cwd = hardhat_util.get_root(),
-                    on_exit = function(job,_) vim.notify(job:result()) end,
-                }):start()
+                for _, pair in ipairs(network_contract_pairs) do
+                    local network, contract = unpack(pair)
+                    vim.notify(string.format("deploying %s using network %s", contract, network))
+                    Job:new({
+                        command = config.package_manager,
+                        args = { "hardhat", "deploy", "--tags", contract, "--network", network },
+                        cwd = util.get_root(),
+                        on_exit = function(job,_) vim.notify(job:result()) end,
+                    }):start()
+                end
             end)
 
             return true
@@ -85,7 +79,7 @@ M.hardhat_deploy_picker = function(opts)
     opts = opts or {}
     local prompt_title = "hardhat deploy"
 
-    hardhat_util.check_deploy_system_and_do(
+    util.check_deploy_system_and_do(
         function()
             return pickers.new(opts, {
                 prompt_title =prompt_title,
