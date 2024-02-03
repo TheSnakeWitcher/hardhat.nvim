@@ -80,12 +80,27 @@ function M.set_gas_extmarks(bufnr)
         return nil
     end
 
+    local existent_fns = {}
     for fn, attributes in pairs(fn_attributes) do
         local fn_gas_estimate = contract_gas_estimates[fn]
         if fn_gas_estimate then
             set_gas_extmark(bufnr, fn, attributes, fn_gas_estimate)
         end
+        table.insert(existent_fns, fn)
     end
+
+    local all_fns = vim.tbl_keys(extmarks_of[bufnr])
+    vim.tbl_map(function(fn)
+        if not vim.tbl_contains(existent_fns, fn) then
+            vim.api.nvim_buf_del_extmark(
+                bufnr,
+                config.ns,
+                extmarks_of[bufnr][fn]
+            )
+            extmarks_of[bufnr][fn] = nil
+        end
+    end, all_fns)
+
 end
 
 setmetatable(M, {
