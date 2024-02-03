@@ -15,6 +15,14 @@ function M.get_pairs(networks, contracts)
     return results
 end
 
+function M.do_with_pairs(networks, contracts, callback)
+    for _, network in ipairs(networks) do
+        for _, contract in ipairs(contracts) do
+            callback(network, contract)
+        end
+    end
+end
+
 function M.get_entry_and_close_buf(prompt_bufnr)
 	local entry = actions_state.get_selected_entry().value
 	actions.close(prompt_bufnr)
