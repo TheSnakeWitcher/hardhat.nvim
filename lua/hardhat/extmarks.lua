@@ -63,14 +63,20 @@ end
 function M.set_gas_extmarks(bufnr)
     local gas_estimates = artifacts.get_contract_gas_estimates(bufnr)
     if not gas_estimates then
-        vim.notify(string.format("there isn't gas estimates for buffer %d", bufnr))
+        vim.notify(string.format(
+            "there isn't gas estimates in %s",
+            vim.fs.basename(vim.api.nvim_buf_get_name(bufnr)))
+        )
         return nil
     end
     local contract_gas_estimates = vim.tbl_extend("error", gas_estimates.external or {}, gas_estimates.internal or {})
 
     local fn_attributes = artifacts.get_contract_function_signatures(bufnr)
     if not fn_attributes then
-        vim.notify(string.format("there isn't functions attributes in buffer %d", bufnr))
+        vim.notify(string.format(
+            "there isn't functions attributes in %s",
+            vim.fs.basename(vim.api.nvim_buf_get_name(bufnr)))
+        )
         return nil
     end
 
