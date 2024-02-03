@@ -45,12 +45,12 @@ local function hardhat_verify_deploy_picker(opts)
     hardhat_networks_picker_base({}, function(top_prompt_bufnr)
         actions.select_default:replace(function()
 
-            local selected_network = pickers_util.get_entry_and_close_buf(top_prompt_bufnr)
-            hardhat_deployments_picker_base(opts, { hardhat_deploy.get_chain_deployments, selected_network }, function(prompt_bufnr)
+            local networks = pickers_util.get_entries_and_close_buf(top_prompt_bufnr)
+            hardhat_deployments_picker_base(opts, { hardhat_deploy.get_chain_deployments, networks }, function(prompt_bufnr)
                 actions.select_default:replace(function()
 
                     local deployments = pickers_util.get_entries_and_close_buf(prompt_bufnr)
-                    pickers_util.do_with_pairs({ selected_network }, deployments, function(network, deployment)
+                    pickers_util.do_with_pairs(networks, deployments, function(network, deployment)
 	                    vim.notify(string.format("verifying %s using netowrk %s", deployment.deployment_id, network))
                         Job:new({
                             command = config.package_manager,
