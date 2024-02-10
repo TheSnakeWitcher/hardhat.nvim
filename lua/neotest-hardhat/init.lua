@@ -36,11 +36,10 @@ function adapter.discover_positions(path)
         return {}
     end
 
-    local tree = lib.treesitter.parse_positions(
-        path,
-        query,
-        { require_namespaces = true, nested_tests = true }
-    )
+    local tree = lib.treesitter.parse_positions(path, query, {
+        require_namespaces = true,
+        nested_tests = true
+    })
     return tree
 end
 
