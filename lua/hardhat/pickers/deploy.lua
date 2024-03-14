@@ -31,6 +31,9 @@ local function hardhat_ignition_mappings(top_prompt_bufnr, _)
                         command = config.package_manager,
                         args = { "hardhat","ignition", "deploy", deploy_module, "--network", network },
                         cwd = util.get_root(),
+                        env = {
+                            HARDHAT_IGNITION_CONFIRM_DEPLOYMENT = false
+                        },
                         on_exit = function(job,_) vim.notify(job:result()) end,
                     }):start()
                 end)
