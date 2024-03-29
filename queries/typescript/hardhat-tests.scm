@@ -14,7 +14,7 @@
 ( (expression_statement
     (call_expression
         function: (identifier) @func_id (#eq? @func_id "describe")
-        (arguments (function
+        (arguments (function_expression
           (statement_block
             (expression_statement
                 (call_expression
