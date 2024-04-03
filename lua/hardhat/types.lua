@@ -1,0 +1,5 @@
+--- @class ContractInfo
+--- @field path string root relative path to file containing the contract
+--- @field filename string filename of file containing the contract
+--- @field source string filename without extension of file containing the contract
+--- @field contract string contract contained in file
