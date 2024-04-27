@@ -4,14 +4,14 @@ local finders = require("telescope.finders")
 local actions = require("telescope.actions")
 local make_entry = require("telescope.make_entry")
 
-local Job = require("plenary.job")
-
 local config = require("hardhat.config")
 local util = require("hardhat.util")
 local pickers_util = require("hardhat.util.pickers")
 local hardhat_ignition = require("hardhat.ignition")
 local hardhat_deploy = require("hardhat.deploy")
 local hardhat_networks_picker_base = require("hardhat.pickers.networks").hardhat_networks_picker_base
+
+local overseer = require("overseer")
 
 
 local M = {}
@@ -26,16 +26,16 @@ local function hardhat_ignition_mappings(top_prompt_bufnr, _)
 
                 local networks = pickers_util.get_entries_and_close_buf(prompt_bufnr)
                 pickers_util.do_with_pairs(networks, deploy_modules, function(network, deploy_module)
-                    vim.notify(string.format("deploying %s using network %s", vim.fs.basename(deploy_module), network))
-                    Job:new({
-                        command = config.package_manager,
-                        args = { "hardhat","ignition", "deploy", deploy_module, "--network", network },
+                    local task = overseer.new_task({
+                        cmd = config.package_manager,
+                        args =  { "hardhat","ignition", "deploy", deploy_module, "--network", network },
+                        name = string.format("hardhat ignition %s in %s", deploy_module, network),
                         cwd = util.get_root(),
                         env = {
                             HARDHAT_IGNITION_CONFIRM_DEPLOYMENT = false
                         },
-                        on_exit = function(job,_) vim.notify(job:result()) end,
-                    }):start()
+                    })
+                    overseer.run_action(task, "start")
                 end)
 
             end)
@@ -55,13 +55,13 @@ local function hardhat_deploy_mappings(top_prompt_bufnr, _)
 
                 local networks = pickers_util.get_entries_and_close_buf(prompt_bufnr)
                 pickers_util.do_with_pairs(networks, contracts, function(network, contract)
-                    vim.notify(string.format("deploying %s using network %s", contract, network))
-                    Job:new({
-                        command = config.package_manager,
-                        args = { "hardhat", "deploy", "--tags", contract, "--network", network },
+                    local task = overseer.new_task({
+                        cmd = config.package_manager,
+                        args =  { "hardhat", "deploy", "--tags", contract, "--network", network },
+                        name = string.format("hardhat deploy %s in %s", contract, network),
                         cwd = util.get_root(),
-                        on_exit = function(job,_) vim.notify(job:result()) end,
-                    }):start()
+                    })
+                    overseer.run_action(task, "start")
                 end)
 
             end)
