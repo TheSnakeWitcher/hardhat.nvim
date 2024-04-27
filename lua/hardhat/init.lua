@@ -1,5 +1,4 @@
 require("hardhat.cmds")
-require("hardhat.autocmds")
 
 local config = require("hardhat.config")
 local util = require("hardhat.util")
