@@ -55,12 +55,25 @@ end
 
 --- @return neotest.Result[]
 M.parse_results = function(unparsed_data, tree, spec)
-    local data = vim.json.decode(unparsed_data)
+    local data = vim.json.decode(check_errors_in_msg(unparsed_data))
     if not data then
         log_and_notify("failed to parse data")
         return {}
     end
     return data.tests
+end
+
+--- @param msg string
+function check_errors_in_msg(msg)
+    local JSON_START_CHAR = '{'
+
+    local msg_is_ok = vim.startswith(msg, JSON_START_CHAR)
+    if msg_is_ok then
+        return msg
+    end
+
+    local starts = string.find(msg, JSON_START_CHAR)
+    return string.sub(msg, starts)
 end
 
 
