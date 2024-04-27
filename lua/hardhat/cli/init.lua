@@ -28,7 +28,6 @@ M.run = function(opts)
             cmd = config.package_manager,
             args =  vim.list_extend({ "hardhat" }, opts.fargs),
             name = string.format("hardhat %s", opts.fargs[1]),
-            components = { "default", "hardhat.refresh_gas_extmarks" }
         }),
         "start"
     )
