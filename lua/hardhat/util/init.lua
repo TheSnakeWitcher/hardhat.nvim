@@ -10,9 +10,9 @@ M.items = {
     INTERFACE = "interface",
 }
 
-M.deploy_systems = {
-    HARDHAT_IGNITION = "@nomicfoundation/hardhat-ignition-ethers",
-    HARDHAT_DEPLOY = "hardhat-deploy"
+M.deploy_systems_tasks = {
+    HARDHAT_IGNITION = "ignition",
+    HARDHAT_DEPLOY = "deploy"
 }
 
 --- @return string|nil hardhat_config_file
@@ -111,18 +111,11 @@ M.get_package_json = function()
 end
 
 --- @param plugin string 
+--- @param version ?string 
 --- @return boolean plugin_exists
 M.check_plugin_installed = function(plugin)
-    local package_json = M.get_package_json()
-
-    local plugin_version
-    if package_json.devDependencies then
-        plugin_version = package_json.devDependencies[plugin]
-    elseif package_json.dependencies then
-        plugin_version = package_json.dependencies[plugin]
-    end
-
-    if not plugin_version then
+    local out = vim.fn.system(string.format("pnpm hardhat %s", plugin))
+    if vim.startswith(out, 'Error') then
         return false
     else
         return true
@@ -131,8 +124,8 @@ end
 
 --- @return table|nil callback_results
 M.check_deploy_system_and_do = function(hh_ignition_callback, hh_deploy_callback)
-    local hardhat_ignition = M.deploy_systems.HARDHAT_IGNITION
-    local hardhat_deploy = M.deploy_systems.HARDHAT_DEPLOY
+    local hardhat_ignition = M.deploy_systems_tasks.HARDHAT_IGNITION
+    local hardhat_deploy = M.deploy_systems_tasks.HARDHAT_DEPLOY
 
     if M.check_plugin_installed(hardhat_ignition) then
         return hh_ignition_callback()
