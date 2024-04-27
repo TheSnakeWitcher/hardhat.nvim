@@ -12,3 +12,9 @@ vim.api.nvim_create_user_command(
         end,
     }
 )
+
+vim.api.nvim_create_user_command(
+    "HHRefresh",
+    function() vim.schedule(cli.refresh_completion) end,
+    {}
+)
