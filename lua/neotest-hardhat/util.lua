@@ -53,9 +53,10 @@ M.check_hardhat_neovim_plugin_installed = function(root)
     return false
 end
 
---- @param msg string
 --- These function will check if results start with an arbitrary
 --- message before the actual JSON content
+--- @param msg string
+--- @return string
 local function check_errors_in_msg(msg)
     local JSON_START_CHAR = '{'
 
