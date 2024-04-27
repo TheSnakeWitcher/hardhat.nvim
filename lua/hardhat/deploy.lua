@@ -1,6 +1,8 @@
 local scripts = require("hardhat.scripts")
 local Path = require("plenary.path")
 
+local util = require("hardhat.util")
+
 
 local M = {}
 
@@ -10,6 +12,9 @@ M.get_deploy_scripts = function()
 end
 
 M.get_deployments_path = function()
+    local deployments = Path:new(util.get_root()):joinpath("deployments")
+    if deployments:exists() then return deployments:expand() end
+
     return scripts.run("hh-paths").deployments
 end
 
