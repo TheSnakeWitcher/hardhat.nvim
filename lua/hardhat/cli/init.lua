@@ -22,12 +22,21 @@ M.refresh_completion = function()
     M.tasks = completion_options.tasks
 end
 
+--- @param cmd string
+--- @return table components 
+local function get_overseer_components(cmd)
+    local components = { "default" }
+    return components
+end
+
 M.run = function(opts)
+    local cmd = opts.fargs[1]
     overseer.run_action(
         overseer.new_task({
             cmd = config.package_manager,
             args =  vim.list_extend({ "hardhat" }, opts.fargs),
-            name = string.format("hardhat %s", opts.fargs[1]),
+            name = string.format("hardhat %s", cmd),
+            components = get_overseer_components(cmd)
         }),
         "start"
     )
@@ -56,6 +65,12 @@ end
 --- @return string[] completion_options
 local get_root_completion = function()
     local completion_options = {}
+
+    if #M.global_options == 0 then
+        vim.notify("completion refreshed")
+        vim.schedule(M.refresh_completion)
+    end
+
     vim.list_extend(completion_options, M.scopes)
     vim.list_extend(completion_options, M.tasks)
     vim.list_extend(completion_options, M.global_options)
