@@ -26,6 +26,18 @@ end
 --- @return table components 
 local function get_overseer_components(cmd)
     local components = { "default" }
+
+    if cmd == "compile" then
+        vim.list_extend(components, {
+            {
+                -- https://www.reddit.com/r/vim/comments/jk4b0f/better_errorformat_testing/
+                -- https://flukus.github.io/vim-errorformat-demystified.html
+                "on_output_quickfix",
+                errorformat = [[%E%.%#Error:\ %m,%Z\ %#-->\ %f:%l:%c:,%WWarning:\ %m,%Z-->\ %f]],
+            },
+        })
+    end
+
     return components
 end
 
