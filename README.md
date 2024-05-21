@@ -18,8 +18,6 @@ neovim. These is a WIP, any contributions are welcome and appreciated.
     - Pickers to select deployments and networks which are used as intermediary step for the deploy and/or verify pickers.
 - [x] [Overseer](https://github.com/stevearc/overseer.nvim) integration for the `HH` command and
   later for provided telescope pickers.
-- Extmarks for displaying gas estimates which are refreshed(added or deleted) by default on `HH compile` or when entering,
-  only support a single contract,interface or library per source file.
 
 
 # Index
