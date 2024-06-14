@@ -126,9 +126,9 @@ M.complete = function(arglead, cmdline, cursor_pos)
         return get_task_scope_completion(cmd)
     elseif is_task(cmd) then
         return get_task_completion(cmd)
+    else
+        return get_root_completion()
     end
-
-    return get_root_completion()
 end
 
 
