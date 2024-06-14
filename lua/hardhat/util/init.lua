@@ -1,4 +1,5 @@
 local Job = require("plenary.job")
+local Path = require("plenary.path")
 
 
 local M = {}
@@ -22,6 +23,7 @@ M.get_hardhat_config_file = function()
     local opts = { upward = true, stop = root, type = "file" }
     local hardhat_config_file = "hardhat.config"
 
+    -- TODO: use vim.fs.root()
     local ts_results = vim.fs.find(hardhat_config_file .. ".ts", opts)
     if #ts_results == 1 then
         return ts_results[1] , "typescript"
@@ -100,12 +102,7 @@ end
 --- @return string|nil package_json
 M.get_package_json = function()
     local root = M.get_root()
-    local package_json_path = string.format("%s/package.json", root)
-
-    local package_json_file = io.open(package_json_path)
-    local package_json = package_json_file:read("*a")
-    package_json_file:close()
-
+    local package_json =Path:new(root):joinpath("package.json"):read()
     local content = vim.json.decode(package_json)
     return content
 end
