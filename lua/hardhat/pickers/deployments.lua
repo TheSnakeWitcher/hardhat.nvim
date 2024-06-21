@@ -18,11 +18,15 @@ M.hardhat_deployments_picker_base = function(opts, deployment_finder, mappings)
 
     local deployment_finder_fn, deployment_finder_args
     if type(deployment_finder) == "table" then
+
         deployment_finder_fn = deployment_finder[1]
         deployment_finder_args = deployment_finder[2]
+
     elseif type(deployment_finder) == "function" then
+
         deployment_finder_fn = deployment_finder
         deployment_finder_args = nil
+
     end
 
     pickers.new( opts , {
@@ -50,7 +54,7 @@ M.hardhat_deployments_picker = function(opts)
             M.hardhat_deployments_picker_base(opts, hardhat_ignition.get_deployments, function(prompt_bufnr)
                 actions.select_default:replace(function()
                     local deployment = actions_state.get_selected_entry()
-                    vim.notify(string.format("deployment id: %s", deployment.value.deployment_id))
+                    vim.notify(string.format("deployment id: %s", deployment.value.address))
                     actions.close(prompt_bufnr)
                 end)
                 return true
@@ -60,7 +64,7 @@ M.hardhat_deployments_picker = function(opts)
             M.hardhat_deployments_picker_base(opts, hardhat_deploy.get_deployments, function(prompt_bufnr)
                 actions.select_default:replace(function()
                     local deployment = actions_state.get_selected_entry()
-                    vim.notify(string.format("deployment id: %s", deployment.value.deployment_id))
+                    vim.notify(string.format("deployment id: %s", deployment.value.address))
                     actions.close(prompt_bufnr)
                 end)
                 return true
