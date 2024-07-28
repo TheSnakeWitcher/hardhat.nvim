@@ -19,6 +19,7 @@ jobs:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
         with:
           labels: nvim
+          license: MIT
           dependencies: |
             plenary.nvim
             telescope.nvim
