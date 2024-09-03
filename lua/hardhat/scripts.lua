@@ -1,4 +1,5 @@
 local config = require("hardhat.config")
+local util = require("hardhat.util")
 
 
 local M = {}
@@ -21,5 +22,15 @@ M.run = function(script_name)
     end
 end
 
+--- @return table results
+M.get = function()
+    local scripts_dir = vim.fs.joinpath(util.get_root(), 'scripts')
+
+    return vim.iter(vim.fs.dir(scripts_dir))
+        :map(function(script)
+            return vim.fs.joinpath(scripts_dir, script)
+        end)
+        :totable()
+end
 
 return M
