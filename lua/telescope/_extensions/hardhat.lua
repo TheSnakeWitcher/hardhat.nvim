@@ -13,10 +13,6 @@ return telescope.register_extension({
         deploy = hardhat_pickers.deploy,
         deployments = hardhat_pickers.deployments,
         verify = hardhat_pickers.verify,
-
-        -- TODO: add pickers for these
-        -- run = {},       -- find and run task
-        -- export = {},    -- find and export deployments with hardhat-verify
-        -- sourcify = {},  -- find and verify deployed contracts with sourcify
+        scripts = hardhat_pickers.scripts,
     },
 })
