@@ -23,6 +23,11 @@ M.get_networks = function ()
             table.insert(networks, network)
         end
     end
+
+    if not vim.list_contains(networks, "hardhat") then
+        table.insert(networks, "hardhat")
+    end
+
     return networks
 end
 
