@@ -43,15 +43,12 @@ end
 
 M.run = function(opts)
     local cmd = opts.fargs[1]
-    overseer.run_action(
-        overseer.new_task({
-            cmd = config.package_manager,
-            args =  vim.list_extend({ "hardhat" }, opts.fargs),
-            name = string.format("hardhat %s", cmd),
-            components = get_overseer_components(cmd)
-        }),
-        "start"
-    )
+    overseer.new_task({
+        cmd = config.package_manager,
+        args =  vim.list_extend({ "hardhat" }, opts.fargs),
+        name = string.format("hardhat %s", cmd),
+        components = get_overseer_components(cmd)
+    }):start()
 end
 
 --- @param cmd string

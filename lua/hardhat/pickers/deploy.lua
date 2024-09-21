@@ -26,7 +26,7 @@ local function hardhat_ignition_mappings(top_prompt_bufnr, _)
 
                 local networks = pickers_util.get_entries_and_close_buf(prompt_bufnr)
                 pickers_util.do_with_pairs(networks, deploy_modules, function(network, deploy_module)
-                    local task = overseer.new_task({
+                    overseer.new_task({
                         cmd = config.package_manager,
                         args =  { "hardhat","ignition", "deploy", deploy_module, "--network", network },
                         name = string.format("hardhat ignition %s in %s", deploy_module, network),
@@ -34,8 +34,7 @@ local function hardhat_ignition_mappings(top_prompt_bufnr, _)
                         env = {
                             HARDHAT_IGNITION_CONFIRM_DEPLOYMENT = false
                         },
-                    })
-                    overseer.run_action(task, "start")
+                    }):start()
                 end)
 
             end)
@@ -55,13 +54,12 @@ local function hardhat_deploy_mappings(top_prompt_bufnr, _)
 
                 local networks = pickers_util.get_entries_and_close_buf(prompt_bufnr)
                 pickers_util.do_with_pairs(networks, contracts, function(network, contract)
-                    local task = overseer.new_task({
+                    overseer.new_task({
                         cmd = config.package_manager,
                         args =  { "hardhat", "deploy", "--tags", contract, "--network", network },
                         name = string.format("hardhat deploy %s in %s", contract, network),
                         cwd = util.get_root(),
-                    })
-                    overseer.run_action(task, "start")
+                    }):start()
                 end)
 
             end)

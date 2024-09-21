@@ -1,5 +1,4 @@
 local actions = require("telescope.actions")
-local actions_state = require("telescope.actions.state")
 
 local Job = require("plenary.job")
 
