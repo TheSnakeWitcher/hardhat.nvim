@@ -9,9 +9,9 @@ local M = {}
 --- @param err_msg string
 local function check_condition(condition, ok_msg, err_msg)
     if condition then
-        vim.health.report_ok(ok_msg)
+        vim.health.ok(ok_msg)
     else
-        vim.health.report_error(err_msg)
+        vim.health.error(err_msg)
     end
 end
 
@@ -21,26 +21,20 @@ local function check_module(module)
     check_condition(
         module_installed,
         module .. " installed",
-        module .. " is requried"
+        module .. " is required"
     )
 end
 
---- @param modules string[]
-local function check_modules(modules)
-    for _, module in ipairs(modules) do
-        check_module(module)
-    end
-end
-
 M.check = function()
-    vim.health.report_start("hardhat.nvim report")
+    vim.health.start("hardhat.nvim report")
 
     check_condition(
         util.check_js_package_manager_exists(),
         "js package manager installed",
         "js package manager required"
     )
-    check_modules({"plenary", "telescope", "overseer"})
+
+    vim.iter({"plenary", "telescope", "overseer"}):map(check_module)
 end
 
 
