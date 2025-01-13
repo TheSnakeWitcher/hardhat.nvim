@@ -124,10 +124,10 @@ M.check_deploy_system_and_do = function(hh_ignition_callback, hh_deploy_callback
     local hardhat_ignition = M.deploy_systems_tasks.HARDHAT_IGNITION
     local hardhat_deploy = M.deploy_systems_tasks.HARDHAT_DEPLOY
 
-    if M.check_plugin_installed(hardhat_ignition) then
-        return hh_ignition_callback()
-    elseif M.check_plugin_installed(hardhat_deploy) then
+    if M.check_plugin_installed(hardhat_deploy) then
         return hh_deploy_callback()
+    elseif M.check_plugin_installed(hardhat_ignition) then
+        return hh_ignition_callback()
     else
         return nil
     end
